@@ -5,17 +5,34 @@ import newspaper
 from ScrapeNews.models import UpToDateNews
 from ScrapeNews.models import db
 from newspaper import Config
+import ScrapeNews
 newss=[]
+s=[]
+
+# @app.route('/searchnews', methods=['POST','GET'])
+# def appearSearchBox():
+#     isAppear=True
+#     return render_template('newsApp.html', isAppear=isAppear)
+
+@app.route('/searchednews', methods=['POST','GET'])
+def search():
+    text = request.args.get('news')
+    newss=ScrapeNews.query.filter(ScrapeNews.newsTitle.startswith(text)).all()
+    for new in newss:
+        if text in new.newsTitle:
+            s.push(new)
+    
+    return render_template('searchedNews.html', news=s)
 
 @app.route('/', methods=['POST','GET'])
 def index():
     Title=""
     config = Config()
-    config.request_timeout = 120
+    config.request_timeout = 60
     if request.method == 'POST':
         db.create_all()
-        dunyaArticles = newspaper.build('https://dunyanews.tv/', config=config)
-        for articles in dunyaArticles.articles[0:10]:
+        samaaArticles = newspaper.build('https://www.samaaenglish.tv/', config=config)
+        for articles in samaaArticles.articles[0:10]:
             articles.download()
             articles.parse()
             Title = articles.title
@@ -75,7 +92,6 @@ def all():
         return redirect('/')
     except:
         return "There was a problem deleting your scrapped data"
-
 
 
 @app.route('/delete/<int:id>')

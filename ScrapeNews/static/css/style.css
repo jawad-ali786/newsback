@@ -310,3 +310,9 @@ hr{
     text-align: center;
     margin: 0;
 }
+.btn-submit_news:hover{
+   cursor: pointer;
+}
+.btn_reload:hover{
+   cursor: pointer;
+}
