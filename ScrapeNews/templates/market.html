@@ -2,14 +2,19 @@
 
 {% block body %}
 
-<form action="/" method="POST">
-    <span>&#128270;</span>
-    <input type="text" name="content" id="content"/>
-    <button type="submit">Scrape News</button>
-</form>
-
 <div class="container">
-    
+    {% for task in newss %}
+        {% if 'geo.tv' in task.newsUrl %}
+            <a href="{{task.newsUrl}}">
+                <div class="body-div1">
+                    <div class="pic1">
+                        <img src="{{task.newsImage}}" id="{{task.id}}">
+                    </div>
+                    <h3>{{task.newsTitle}}</h3>
+                </div>    
+            </a>
+        {% endif %}
+    {% endfor %}
 </div>
     
 

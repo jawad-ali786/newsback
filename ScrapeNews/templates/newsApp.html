@@ -113,7 +113,47 @@
     </div>
     <hr>
 
+    <h2 class="body-div0">
+        <button>
+            DUNYA NEWS
+        </button>
+    </h2>
+    <div class="headwith-3divs">
+        {% for task in tasks %}
+            {% if 'dunyanews.tv' in task.newsUrl %}
+                <a href="{{task.newsUrl}}">
+                    <div class="body-div1">
+                        <div class="pic1">
+                            <img src="{{task.newsImage}}" id="{{task.id}}">
+                        </div>
+                        <h3>{{task.newsTitle}}</h3>
+                    </div>    
+                </a>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <hr>
 
+    <h2 class="body-div0">
+        <button>
+            PARHLO NEWS
+        </button>
+    </h2>
+    <div class="headwith-3divs">
+        {% for task in tasks %}
+            {% if 'parhlo.com' in task.newsUrl %}
+            <a href="{{task.newsUrl}}">
+                <div class="body-div1">
+                    <div class="pic1">
+                        <img src="{{task.newsImage}}" id="{{task.id}}">
+                    </div>
+                    <h3>{{task.newsTitle}}</h3>
+                </div>    
+            </a>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <hr>
 
     <h2 class="body-div0">
         <button>

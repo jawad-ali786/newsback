@@ -1,11 +1,11 @@
 from ScrapeNews import app
-from flask import render_template,request, redirect
+from flask import render_template,request, redirect, jsonify
 from newspaper import Article
 import newspaper
 from ScrapeNews.models import UpToDateNews
 from ScrapeNews.models import db
 from newspaper import Config
-import ScrapeNews
+import json, jsonpickle
 newss=[]
 s=[]
 
@@ -14,15 +14,15 @@ s=[]
 #     isAppear=True
 #     return render_template('newsApp.html', isAppear=isAppear)
 
-@app.route('/searchednews', methods=['POST','GET'])
-def search():
-    text = request.args.get('news')
-    newss=ScrapeNews.query.filter(ScrapeNews.newsTitle.startswith(text)).all()
-    for new in newss:
-        if text in new.newsTitle:
-            s.push(new)
+# @app.route('/searchednews', methods=['POST','GET'])
+# def search():
+#     text = request.args.get('news')
+#     newss=ScrapeNews.query.filter(ScrapeNews.newsTitle.startswith(text)).all()
+#     for new in newss:
+#         if text in new.newsTitle:
+#             s.push(new)
     
-    return render_template('searchedNews.html', news=s)
+#     return render_template('searchedNews.html', news=s)
 
 @app.route('/', methods=['POST','GET'])
 def index():
@@ -31,14 +31,27 @@ def index():
     config.request_timeout = 60
     if request.method == 'POST':
         db.create_all()
+        samaaArticles = newspaper.build('https://www.parhlo.com/viral/', config=config)
+        for articles in samaaArticles.articles[0:10]:
+            articles.download()
+            articles.parse()
+            Title = articles.title
+            Text = articles.text
+            Image = articles.top_image
+            Url = articles.url
+            newArticle= UpToDateNews(newsTitle=Title, newsText=Text,newsImage=Image, newsUrl=Url)
+            db.session.add(newArticle)
+            db.session.commit()
+
         samaaArticles = newspaper.build('https://www.samaaenglish.tv/', config=config)
         for articles in samaaArticles.articles[0:10]:
             articles.download()
             articles.parse()
             Title = articles.title
+            Text = articles.text
             Image = articles.top_image
             Url = articles.url
-            newArticle= UpToDateNews(newsTitle=Title, newsImage=Image, newsUrl=Url)
+            newArticle= UpToDateNews(newsTitle=Title, newsText=Text,newsImage=Image, newsUrl=Url)
             db.session.add(newArticle)
             db.session.commit()
 
@@ -47,20 +60,35 @@ def index():
             articles.download()
             articles.parse()
             Title = articles.title
+            Text = articles.text
             Image = articles.top_image
             Url = articles.url
-            newArticle= UpToDateNews(newsTitle=Title, newsImage=Image, newsUrl=Url)
+            newArticle= UpToDateNews(newsTitle=Title,newsText=Text, newsImage=Image, newsUrl=Url)
             db.session.add(newArticle)
             db.session.commit()
 
-        expressArticles = newspaper.build('https://www.express.pk/')
+        expressArticles = newspaper.build('https://www.express.pk/', config=config)
         for articles in expressArticles.articles[0:10]:
             articles.download()
             articles.parse()
             Title = articles.title
+            Text = articles.text
             Image = articles.top_image
             Url = articles.url
-            newArticle= UpToDateNews(newsTitle=Title, newsImage=Image, newsUrl=Url)
+            newArticle= UpToDateNews(newsTitle=Title,newsText=Text, newsImage=Image, newsUrl=Url)
+
+            db.session.add(newArticle)
+            db.session.commit()
+
+        expressArticles = newspaper.build('https://dunyanews.tv/', config=config)
+        for articles in expressArticles.articles[0:10]:
+            articles.download()
+            articles.parse()
+            Title = articles.title
+            Text = articles.text
+            Image = articles.top_image
+            Url = articles.url
+            newArticle= UpToDateNews(newsTitle=Title,newsText=Text, newsImage=Image, newsUrl=Url)
 
             db.session.add(newArticle)
             db.session.commit()
@@ -70,9 +98,10 @@ def index():
             articles.download()
             articles.parse()
             Title = articles.title
+            Text = articles.text
             Image = articles.top_image
             Url = articles.url
-            newArticle= UpToDateNews(newsTitle=Title, newsImage=Image, newsUrl=Url)
+            newArticle= UpToDateNews(newsTitle=Title,newsText=Text, newsImage=Image, newsUrl=Url)
 
             db.session.add(newArticle)
             db.session.commit()
@@ -80,18 +109,24 @@ def index():
 
     # except:
     #     return render_template('error.html')
-    newss = UpToDateNews.query.order_by(UpToDateNews.date_created).all()
-    return render_template('newsApp.html', tasks=newss)
+    task = UpToDateNews.query.order_by(UpToDateNews.date_created).all()
+    return render_template('newsApp.html', tasks=task)
+    # return jsonpickle.encode(task)
 
 
-@app.route('/all', methods=['POST','GET'])
-def all():
+@app.route('/getallnews', methods=['GET'])
+def getallnews():
     try:
-        for new in newss:
-            print(new.newsTitle)
-        return redirect('/')
+        # jsonify(UpToDateNews.query.order_by(UpToDateNews.date_created).all())
+        newss=UpToDateNews.query.order_by(UpToDateNews.date_created).all()
+        # return render_template("market.html", newss=newss)
+        # return jsonify({"data":newss})
+        res_list = list(enumerate(newss))
+        return jsonpickle.encode(newss)
+
+        # return json.dumps(newss)
     except:
-        return "There was a problem deleting your scrapped data"
+        return "There was a problem scraping your scrapped data"
 
 
 @app.route('/delete/<int:id>')

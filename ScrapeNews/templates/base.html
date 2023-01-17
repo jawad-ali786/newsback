@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,7 +7,6 @@
     <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-    <div class="overall-div">
         <div class="top">
             <!-- <div class="FUUAST-div"> -->
             <img class="FUUAST-logo" src="{{url_for('static', filename='/images/federal-urdu-university-logo.png')}}" alt="FUUAST logo">
@@ -28,7 +26,7 @@
                 <li> <a href="#">BUSINESS</a> </li>
                 <li> <a href="#">SPORTS</a> </li>
                 <div class="right">
-                    <form action="/searchednews" style="display: flex;" method="GET">
+                    <form style="display: flex;" method="GET">
                         <input type="text" name="news" placeholder="Search News.." style="padding: 0 0 0 5px; height: 30px; width: 230px;"/>
                         <button type="submit" style="background: transparent; border: none;" class="btn-submit_news">
                             <img class="search-icon" src="{{url_for('static', filename='/images/search-icon.png')}}" alt="search icon">
